@@ -1,5 +1,5 @@
-# Running the migration script
-This script was provided by dagshub, based on the following [gist](https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py)
+# DVC 0 to DVC 1 Migration Script
+This script was provided by dagshub, and powered by the the following [gist](https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py)
 
 ### The fast way – Spare me the details!
 
