@@ -1,4 +1,6 @@
 # DVC 0 to DVC 1 Migration Script
+Want to ask a quick question? Join our community [![Discord](https://img.shields.io/discord/698874030052212737)](https://discord.com/invite/9gU36Y6)  !
+
 This script was provided by dagshub, and powered by the the following [gist](https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py)
 
 ### The fast way – Spare me the details!
@@ -82,9 +84,6 @@ git commit -m "migration to dvc 1"
 git push -u origin dvc-1-migration
 ```
 
-
-
-Want to ask a quick question? Join our community [![Discord](https://img.shields.io/discord/698874030052212737)](https://discord.com/invite/9gU36Y6)  !
 
 ---
 
