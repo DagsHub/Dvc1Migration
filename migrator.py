@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import yaml
 
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,9 @@ def migrate(dvc, path, name):
     dvcfile = SingleStageFile(dvc, path)
     stage = dvcfile.stage
     stage.name = name
+
+    # Change stage path to future stage path (dvc.yaml file location)
+    stage.path = os.path.join(os.getcwd(), "dvc.yaml")
     p_file = PipelineFile(dvc, "dvc.yaml")
 
     # using internal APIs, there are checks on `dump()`.
@@ -34,37 +38,28 @@ def migrate(dvc, path, name):
     )
 
 
-def rollback(dvc, path, name):
-    from dvc.utils.stage import dump_stage_file
-    from dvc.dvcfile import PipelineFile
+def is_dvc_stage_file(file_path):
+    if os.path.splitext(file)[1].lower() != ".dvc":
+        return False
 
-    dvcfile = PipelineFile(dvc, "dvc.yaml")
-    stage = dvcfile.stages[name]
-    dump_stage_file(path, stage.dumpd())
-    
-    # don't have an API for removing entry.
-    logger.warning(
-        "Please remove entries regarding '{name}' from 'dvc.yaml' and 'dvc.lock'.".format(
-            name=name
-        )
-    )
+    with open(file_path, "r") as dvc_file:
+        dvc_yaml = yaml.safe_load(dvc_file)
+        return dvc_yaml.get("cmd") is not None
 
 
 if __name__ == "__main__":
-    ### Usage: ./migrator.py <dot-dvc-file> <stage_name>
-    ###        ./migrator.py featurize.dvc featurize
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--rollback", action="store_true")
-    parser.add_argument(
-        "path", help="Path to dvcfile (to output in terms of rollback)"
-    )
-    parser.add_argument(
-        "name", help="Name of stage to output (to use in terms of rollback)"
-    )
+    parser.add_argument('--single-stage', nargs=2, metavar=('dvc file', 'stage name'), )
 
     args = parser.parse_args()
     repo = _get_repo()
-    if args.rollback:
-        rollback(repo, args.path, args.name)
+    if args.single_stage:
+        path, name = args.single_stage
+        migrate(repo, path, name)
     else:
-        migrate(repo, args.path, args.name)
+        for file in [os.path.join(dir_path, file) for dir_path, _, files in os.walk(".") for file in files]:
+            if not is_dvc_stage_file(file):
+                continue
+            stage_name = os.path.splitext(os.path.basename(file))[0]
+            migrate(repo, file, stage_name)
+
