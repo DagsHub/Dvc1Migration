@@ -39,7 +39,7 @@ def migrate(dvc, path, name):
 
 
 def is_dvc_stage_file(file_path):
-    if os.path.splitext(file)[1].lower() != ".dvc":
+    if os.path.splitext(file)[1].lower() != ".dvc" and os.path.basename(file_path).lower() != "dvcfile":
         return False
 
     with open(file_path, "r") as dvc_file:
