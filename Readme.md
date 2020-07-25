@@ -1,7 +1,11 @@
-# DVC 0 to DVC 1 Migration Script
-Want to ask a quick question? Join our community [![Discord](https://img.shields.io/discord/698874030052212737)](https://discord.com/invite/9gU36Y6)  !
+<div align="center">
+  <a href="https://dagshub.com"><img src="https://raw.githubusercontent.com/DAGsHub/client/master/dagshub_github.png" width=600 alt=""/></a><br><br>
+</div>
 
-This script was provided by dagshub, and powered by the the following [gist](https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py)
+[![Discord](https://img.shields.io/discord/698874030052212737)](https://discord.com/invite/9gU36Y6)
+
+# DVC 0 to DVC 1 Migration Script
+This script was provided by DAGsHub, and based on the the following [gist](https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py) provided by one of [DVC](https://github.com/iterative/dvc)'s collaborators.
 
 ### The fast way – Spare me the details!
 
