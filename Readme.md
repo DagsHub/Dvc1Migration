@@ -18,69 +18,41 @@ python migrator.py
 
 ### The long way – I want to understand!
 
-Download [this python script](https://gist.github.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da) provided by one of DVC's collaborators and copy it to the working directory
+In DVC ≤ 0.94 stages were named after the files containing their details — `Dvcfile` or `<name>.dvc`. Since DVC 1 you define the name of the stage and not the name of the file containing it.
 
+[This python script](https://gist.github.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da) provided by one of DVC’s collaborators is converting a single-stage file into a stage inside `dvc.yaml` and `dvc.lock`. It takes as arguments an original `.dvc` file (or `Dvcfile`) and the name of the stage as it should appear in our new pipeline. This means you have to manually run `python migrator.py <file.dvc> <stage_name>` numerous times. When it comes to a pipeline with many stages, this might become cumbersome. Moreover, some of the `.dvc` files don't represent stages in your pipeline but just tracked files cache information. This means they were created by DVC when running the command `dvc add` or `dvc import`. These should not appear as stages in your dvc.yaml file.
+
+I took the liberty to alter the script so that it could migrate an entire project with as many `.dvc` files as I want. In short, it will search for `.dvc` files that have a "cmd" key, and add their content as a stage in the new format. For example, if you currently have a stage file named `train.dvc`, the script will assume you want to call the stage `train`. Feel free to alter this behavior to your liking!
+
+You can download it like this:
 ```bash
-curl https://gist.githubusercontent.com/skshetry/07a3e26e6b06783e1ad7a4b6db6479da/raw/919786bf6dd5c97dbb64a53c5066de3bb2f5e57d/migrator.py -O
+curl 'https://raw.githubusercontent.com/DAGsHub/Dvc1Migration/master/migrator.py' -O
 ```
 
-The scripts requires you to have the `argparse` package in your python environment
-
-```bash
-pip install argparse
-```
-
-Now the script provided takes as arguments an original .dvc file (or Dvcfile) and the name of the stage as it should appear in our pipeline. 
-
-This means you have to manually run `python [migrate.py](http://migrate.py) <file.dvc> <stage_name>` numerous time. When it comes to a pipeline with many stages, this might become cumbersome. Moreover, some of the .dvc files don't represent stages in your pipeline but just tracked files cache information. These should not appear as stages in your `dvc.yaml` file. 
-
-Let's write a bash script that takes care of that
-
-```bash
-migrate() {
-	for file_path in $(find . -type f -name "*.dvc" && find . -type f -name "Dvcfile")
-	do
-		# check if the file has a top level "cmd" key
-		if grep -q "^ *cmd:" ${file_path} ; then
-			# replace a stage file <stage_name>.dvc to <stage_name>
-			stage_name="$(basename ${file_path} .dvc)"
-			echo "migrating ${file_path} as stage \"${stage_name}\""
-			python migrator.py ${file_path} ${stage_name}
-		fi
-	done
-}
-migrate
-```
-
-You can download it like this
-
-```bash
-curl 'https://raw.githubusercontent.com/DAGsHub/Dvc1Migration/master/migrate.sh' -O
-```
-
-**What is `migrate()` actually doing?**
-
-In short it will search for .dvc files that have a "cmd" key, and add their content as stages in the new format. For example if you currently have a stage file named `train.dvc`, the script will assume you want to call the stage `train`. Feel free to alter this behaviour to your liking! 
-
-All the original .dvc files will be backed up as `<old_file>.dvc.bak` and two new files will be created at the root of your working directory:
-
+All the original `.dvc` files will be backed up as `<old_file>.dvc.bak` and two new files will be created at the root of your working directory
 1. [dvc.yaml](https://dvc.org/doc/user-guide/dvc-files-and-directories#dvcyaml-file)
 2. [dvc.lock](https://dvc.org/doc/user-guide/dvc-files-and-directories#dvclock-file)
 
-To run the command just make it executable
-
+To run the command:
 ```bash
-chmod +x migrate.sh
+python migrator.py
 ```
 
-And run it!
-
+The output should look like this:
 ```bash
-./migrate.sh
+Creating 'dvc.yaml'
+Adding stage 'featurization' in 'dvc.yaml'
+Generating lock file 'dvc.lock'
+Adding stage 'training' in 'dvc.yaml'
+Updating lock file 'dvc.lock'
+Adding stage 'Dvcfile' in 'dvc.yaml'
+Updating lock file 'dvc.lock'
+...
 ```
 
-Start tracking the newly generated files by running
+If you don’t recognize this pattern, feel free to describe your problem in the comments below and I’ll do my best to take a look at it.
 
+Otherwise, start tracking the newly generated files by running:
 ```bash
 git stage -u .
 git add dvc.yaml dvc.lock
@@ -88,6 +60,12 @@ git commit -m "migration to dvc 1"
 git push -u origin dvc-1-migration
 ```
 
+This will:
+1. Mark the old `.dvc` files as deleted in git, while keeping the backup files in your working directory untracked
+2. Add the new `dvc.yaml` and `dvc.lock` to you git tree
+3. Commit and push the branch `dvc-1-migration` to your `origin` remote
+
+That’s it, you have now migrated your project to DVC 1!
 
 ---
 
