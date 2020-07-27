@@ -12,8 +12,7 @@ This script was provided by DAGsHub, and based on the the following [gist](https
 I recommend that you carry on reading to take a look at what the script is actually doing, but if you absolutely just want to run the script you can do the following
 
 ```bash
-curl 'https://raw.githubusercontent.com/DAGsHub/Dvc1Migration/master/migrator.py' -O && \
-python migrator.py
+curl 'https://raw.githubusercontent.com/DAGsHub/Dvc1Migration/master/migrator.py' | python -
 ```
 
 ### The long way – I want to understand!
